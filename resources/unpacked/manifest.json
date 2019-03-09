@@ -1,0 +1,26 @@
+{
+  "name": "repro",
+  "version": "0.1",
+  "description": "post-message fails",
+
+  "browser_action": {
+    "browser_style": true,
+    "default_popup": "popup.html"
+  },
+
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+
+  "background": {
+    "page": "background.html",
+    "persistent": true
+  },
+
+  "incognito": "spanning",
+
+  "permissions": [
+    "storage",
+    "unlimitedStorage"
+  ],
+
+  "manifest_version": 2
+}
