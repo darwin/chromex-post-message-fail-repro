@@ -9,23 +9,23 @@
     [repro.plugin-frontend.channel :refer [send-to-background!]]
     [repro.user.auth.ui :as auth.ui]))
 
-(defn connect-to-background! []
-  (let [background-port (runtime/connect)]
-    (go-loop
-      []
-      (log "inside go-loop")
-      (when-some [msg (<! background-port)]
-        (log "background says:" msg)
-        (recur))
-      (log "leaving go-loop"))))
+(def background-port (atom nil))
 
+(defn connect-to-background! []
+  (reset! background-port (runtime/connect))
+  (go-loop []
+    (log "inside go-loop")
+    (when-some [msg (<! @background-port)]
+      (log "background says:" msg)
+      (recur))
+    (log "leaving go-loop")))
 
 (defn mount-root! [root-id]
   (let [root-node (.getElementById js/document root-id)]
     (log "Mounting to: " root-node)
 
     (.replaceWith root-node (auth.ui/login-form {:login! (fn [{:keys [email password]}]
-                                                           (send-to-background! "user submitted login form"))}))))
+                                                           (send-to-background! @background-port "user submitted login form"))}))))
 
 
 (defn init! []
